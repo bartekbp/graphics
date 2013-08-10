@@ -14,6 +14,7 @@
 #include "../framework/Mesh.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <time.h>
 
 #define ARRAY_COUNT( array ) (sizeof( array ) / (sizeof( array[0] ) * (sizeof( array ) != sizeof(void*) || sizeof( array[0] ) <= sizeof(void*))))
 
@@ -32,6 +33,17 @@ float g_fzFar = 1000.0f;
 ProgramData UniformColor;
 ProgramData ObjectColor;
 ProgramData UniformColorTint;
+
+
+struct TreeData
+{
+	float fXPos;
+	float fZPos;
+	float fTrunkHeight;
+	float fConeHeight;
+};
+
+static std::vector<TreeData> g_forest;
 
 ProgramData LoadProgram(const std::string &strVertexShader, const std::string &strFragmentShader)
 {
@@ -78,6 +90,48 @@ glm::mat4 CalcLookAtMatrix(const glm::vec3 &cameraPt, const glm::vec3 &lookPt, c
 	return rotMat * transMat;
 }
 
+float max(float a, float b)
+{
+	return a > b ? a : b;
+}
+
+
+float min(float a, float b)
+{
+	return a > b ? b : a;
+}
+
+float RandWithStep(float start, float end, float step)
+{
+	return (rand() % int((end - start) * (1 / step)) * step) + start;
+}
+
+TreeData CreateTree(float sx, float ex, float stepx, float sz, float ez, float stepz, float st, float et, float sc, float ec)
+{
+	float x = min(ex, RandWithStep(sx, ex, stepx));
+	float z = min(ez, RandWithStep(sz, ez, stepz));
+	float trunk = RandWithStep(st, et, 0.15);
+	float cone = RandWithStep(sc, ec, 0.24);
+	TreeData tree = {x, z, trunk, cone};
+	return tree;
+}
+
+void CreateTrees(float startx, float endx, float startz, float endz, int count)
+{
+	for(int i = 0; i < count; i++)
+	{
+		TreeData tree = CreateTree(startx, endx, 0.4f, startz, endz, 0.4f, 0.5f, 2, 1.8f, 3.7f);
+		g_forest.push_back(tree);
+	}
+}
+
+void CreateForest()
+{
+	srand(time(0));
+	CreateTrees(-50, -15, -100, 0, 130);
+	CreateTrees(15, 50, -100, 0, 130);
+}
+
 Framework::Mesh *g_pConeMesh = NULL;
 Framework::Mesh *g_pCylinderMesh = NULL;
 Framework::Mesh *g_pCubeTintMesh = NULL;
@@ -88,6 +142,8 @@ Framework::Mesh *g_pPlaneMesh = NULL;
 void init()
 {
 	InitializeProgram();
+
+	CreateForest();
 
 	try
 	{
@@ -150,125 +206,9 @@ void DrawTree(glutil::MatrixStack &modelMatrix, float fTrunkHeight = 2.0f, float
 }
 
 
-struct TreeData
-{
-	float fXPos;
-	float fZPos;
-	float fTrunkHeight;
-	float fConeHeight;
-};
-
-static const TreeData g_forest[] =
-{
-	{-45.0f, -40.0f, 2.0f, 3.0f},
-	{-42.0f, -35.0f, 2.0f, 3.0f},
-	{-39.0f, -29.0f, 2.0f, 4.0f},
-	{-44.0f, -26.0f, 3.0f, 3.0f},
-	{-40.0f, -22.0f, 2.0f, 4.0f},
-	{-36.0f, -15.0f, 3.0f, 3.0f},
-	{-41.0f, -11.0f, 2.0f, 3.0f},
-	{-37.0f, -6.0f, 3.0f, 3.0f},
-	{-45.0f, 0.0f, 2.0f, 3.0f},
-	{-39.0f, 4.0f, 3.0f, 4.0f},
-	{-36.0f, 8.0f, 2.0f, 3.0f},
-	{-44.0f, 13.0f, 3.0f, 3.0f},
-	{-42.0f, 17.0f, 2.0f, 3.0f},
-	{-38.0f, 23.0f, 3.0f, 4.0f},
-	{-41.0f, 27.0f, 2.0f, 3.0f},
-	{-39.0f, 32.0f, 3.0f, 3.0f},
-	{-44.0f, 37.0f, 3.0f, 4.0f},
-	{-36.0f, 42.0f, 2.0f, 3.0f},
-
-	{-32.0f, -45.0f, 2.0f, 3.0f},
-	{-30.0f, -42.0f, 2.0f, 4.0f},
-	{-34.0f, -38.0f, 3.0f, 5.0f},
-	{-33.0f, -35.0f, 3.0f, 4.0f},
-	{-29.0f, -28.0f, 2.0f, 3.0f},
-	{-26.0f, -25.0f, 3.0f, 5.0f},
-	{-35.0f, -21.0f, 3.0f, 4.0f},
-	{-31.0f, -17.0f, 3.0f, 3.0f},
-	{-28.0f, -12.0f, 2.0f, 4.0f},
-	{-29.0f, -7.0f, 3.0f, 3.0f},
-	{-26.0f, -1.0f, 2.0f, 4.0f},
-	{-32.0f, 6.0f, 2.0f, 3.0f},
-	{-30.0f, 10.0f, 3.0f, 5.0f},
-	{-33.0f, 14.0f, 2.0f, 4.0f},
-	{-35.0f, 19.0f, 3.0f, 4.0f},
-	{-28.0f, 22.0f, 2.0f, 3.0f},
-	{-33.0f, 26.0f, 3.0f, 3.0f},
-	{-29.0f, 31.0f, 3.0f, 4.0f},
-	{-32.0f, 38.0f, 2.0f, 3.0f},
-	{-27.0f, 41.0f, 3.0f, 4.0f},
-	{-31.0f, 45.0f, 2.0f, 4.0f},
-	{-28.0f, 48.0f, 3.0f, 5.0f},
-
-	{-25.0f, -48.0f, 2.0f, 3.0f},
-	{-20.0f, -42.0f, 3.0f, 4.0f},
-	{-22.0f, -39.0f, 2.0f, 3.0f},
-	{-19.0f, -34.0f, 2.0f, 3.0f},
-	{-23.0f, -30.0f, 3.0f, 4.0f},
-	{-24.0f, -24.0f, 2.0f, 3.0f},
-	{-16.0f, -21.0f, 2.0f, 3.0f},
-	{-17.0f, -17.0f, 3.0f, 3.0f},
-	{-25.0f, -13.0f, 2.0f, 4.0f},
-	{-23.0f, -8.0f, 2.0f, 3.0f},
-	{-17.0f, -2.0f, 3.0f, 3.0f},
-	{-16.0f, 1.0f, 2.0f, 3.0f},
-	{-19.0f, 4.0f, 3.0f, 3.0f},
-	{-22.0f, 8.0f, 2.0f, 4.0f},
-	{-21.0f, 14.0f, 2.0f, 3.0f},
-	{-16.0f, 19.0f, 2.0f, 3.0f},
-	{-23.0f, 24.0f, 3.0f, 3.0f},
-	{-18.0f, 28.0f, 2.0f, 4.0f},
-	{-24.0f, 31.0f, 2.0f, 3.0f},
-	{-20.0f, 36.0f, 2.0f, 3.0f},
-	{-22.0f, 41.0f, 3.0f, 3.0f},
-	{-21.0f, 45.0f, 2.0f, 3.0f},
-
-	{-12.0f, -40.0f, 2.0f, 4.0f},
-	{-11.0f, -35.0f, 3.0f, 3.0f},
-	{-10.0f, -29.0f, 1.0f, 3.0f},
-	{-9.0f, -26.0f, 2.0f, 2.0f},
-	{-6.0f, -22.0f, 2.0f, 3.0f},
-	{-15.0f, -15.0f, 1.0f, 3.0f},
-	{-8.0f, -11.0f, 2.0f, 3.0f},
-	{-14.0f, -6.0f, 2.0f, 4.0f},
-	{-12.0f, 0.0f, 2.0f, 3.0f},
-	{-7.0f, 4.0f, 2.0f, 2.0f},
-	{-13.0f, 8.0f, 2.0f, 2.0f},
-	{-9.0f, 13.0f, 1.0f, 3.0f},
-	{-13.0f, 17.0f, 3.0f, 4.0f},
-	{-6.0f, 23.0f, 2.0f, 3.0f},
-	{-12.0f, 27.0f, 1.0f, 2.0f},
-	{-8.0f, 32.0f, 2.0f, 3.0f},
-	{-10.0f, 37.0f, 3.0f, 3.0f},
-	{-11.0f, 42.0f, 2.0f, 2.0f},
-
-
-	{15.0f, 5.0f, 2.0f, 3.0f},
-	{15.0f, 10.0f, 2.0f, 3.0f},
-	{15.0f, 15.0f, 2.0f, 3.0f},
-	{15.0f, 20.0f, 2.0f, 3.0f},
-	{15.0f, 25.0f, 2.0f, 3.0f},
-	{15.0f, 30.0f, 2.0f, 3.0f},
-	{15.0f, 35.0f, 2.0f, 3.0f},
-	{15.0f, 40.0f, 2.0f, 3.0f},
-	{15.0f, 45.0f, 2.0f, 3.0f},
-
-	{25.0f, 5.0f, 2.0f, 3.0f},
-	{25.0f, 10.0f, 2.0f, 3.0f},
-	{25.0f, 15.0f, 2.0f, 3.0f},
-	{25.0f, 20.0f, 2.0f, 3.0f},
-	{25.0f, 25.0f, 2.0f, 3.0f},
-	{25.0f, 30.0f, 2.0f, 3.0f},
-	{25.0f, 35.0f, 2.0f, 3.0f},
-	{25.0f, 40.0f, 2.0f, 3.0f},
-	{25.0f, 45.0f, 2.0f, 3.0f},
-};
-
 void DrawForest(glutil::MatrixStack &modelMatrix)
 {
-	for(int iTree = 0; iTree < ARRAY_COUNT(g_forest); iTree++)
+	for(int iTree = 0; iTree < g_forest.size(); iTree++)
 	{
 		const TreeData &currTree = g_forest[iTree];
 
@@ -329,14 +269,23 @@ void display()
 		//Render the ground plane.
 		{
 			glutil::PushStack push(modelMatrix);
+			glDisable(GL_DEPTH_TEST);
 
 			modelMatrix.Scale(glm::vec3(100.0f, 1.0f, 200.0f));
+			glUseProgram(UniformColor.theProgram);
+			glUniformMatrix4fv(UniformColor.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
+			glUniform4f(UniformColor.baseColorUnif, 0.55f, 0.25f, 0.13f, 1.0f);
+			g_pPlaneMesh->Render();
+
+			modelMatrix.Scale(glm::vec3(0.3f, 1.0f, 0.5f));
+			modelMatrix.Translate(0.0f, 0.0f, -0.5f);
 
 			glUseProgram(UniformColor.theProgram);
 			glUniformMatrix4fv(UniformColor.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
-			glUniform4f(UniformColor.baseColorUnif, 0.302f, 0.416f, 0.0589f, 1.0f);
+			glUniform4f(UniformColor.baseColorUnif, 0.63f, 0.60f, 0.48f, 1.0f);
 			g_pPlaneMesh->Render();
 			glUseProgram(0);
+			glEnable(GL_DEPTH_TEST);
 		}
 
 		//Draw the trees
@@ -351,7 +300,6 @@ void display()
 
 			glm::vec3 cameraAimVec = g_camTarget - camPos;
 			modelMatrix.Translate(0.0f, 0.0, -glm::length(cameraAimVec));
-			modelMatrix.Scale(1.0f, 1.0f, 1.0f);
 		
 			glUseProgram(ObjectColor.theProgram);
 			glUniformMatrix4fv(ObjectColor.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
