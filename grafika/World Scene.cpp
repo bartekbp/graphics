@@ -1,7 +1,3 @@
-//Copyright (C) 2010-2012 by Jason L. McKesson
-//This file is licensed under the MIT License.
-
-
 #include <string>
 #include <vector>
 #include <stack>
@@ -15,8 +11,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <time.h>
-
-#define ARRAY_COUNT( array ) (sizeof( array ) / (sizeof( array[0] ) * (sizeof( array ) != sizeof(void*) || sizeof( array[0] ) <= sizeof(void*))))
 
 struct ProgramData
 {
@@ -95,7 +89,6 @@ float max(float a, float b)
 	return a > b ? a : b;
 }
 
-
 float min(float a, float b)
 {
 	return a > b ? b : a;
@@ -110,8 +103,8 @@ TreeData CreateTree(float sx, float ex, float stepx, float sz, float ez, float s
 {
 	float x = min(ex, RandWithStep(sx, ex, stepx));
 	float z = min(ez, RandWithStep(sz, ez, stepz));
-	float trunk = RandWithStep(st, et, 0.15);
-	float cone = RandWithStep(sc, ec, 0.24);
+	float trunk = RandWithStep(st, et, 0.15f);
+	float cone = RandWithStep(sc, ec, 0.24f);
 	TreeData tree = {x, z, trunk, cone};
 	return tree;
 }
@@ -134,7 +127,6 @@ void CreateForest()
 
 Framework::Mesh *g_pConeMesh = NULL;
 Framework::Mesh *g_pCylinderMesh = NULL;
-Framework::Mesh *g_pCubeTintMesh = NULL;
 Framework::Mesh *g_pCubeColorMesh = NULL;
 Framework::Mesh *g_pPlaneMesh = NULL;
 
@@ -149,7 +141,6 @@ void init()
 	{
 		g_pConeMesh = new Framework::Mesh("UnitConeTint.xml");
 		g_pCylinderMesh = new Framework::Mesh("UnitCylinderTint.xml");
-		g_pCubeTintMesh = new Framework::Mesh("UnitCubeTint.xml");
 		g_pCubeColorMesh = new Framework::Mesh("UnitCubeColor.xml");
 		g_pPlaneMesh = new Framework::Mesh("UnitPlane.xml");
 	}
@@ -208,7 +199,7 @@ void DrawTree(glutil::MatrixStack &modelMatrix, float fTrunkHeight = 2.0f, float
 
 void DrawForest(glutil::MatrixStack &modelMatrix)
 {
-	for(int iTree = 0; iTree < g_forest.size(); iTree++)
+	for(unsigned int iTree = 0; iTree < g_forest.size(); iTree++)
 	{
 		const TreeData &currTree = g_forest[iTree];
 
@@ -216,6 +207,19 @@ void DrawForest(glutil::MatrixStack &modelMatrix)
 		modelMatrix.Translate(glm::vec3(currTree.fXPos, 0.0f, currTree.fZPos));
 		DrawTree(modelMatrix, currTree.fTrunkHeight, currTree.fConeHeight);
 	}
+}
+
+void DrawCone(glutil::MatrixStack &modelMatrix)
+{
+	glutil::PushStack push(modelMatrix);
+	modelMatrix.Translate(glm::vec3(0.0f, 0.0f, 50.0f));
+	modelMatrix.Scale(35);
+
+	glUseProgram(UniformColorTint.theProgram);
+	glUniformMatrix4fv(UniformColorTint.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
+	glUniform4f(UniformColorTint.baseColorUnif, 1.0f, 1.0f, 0.5f, 1.0f);
+	g_pConeMesh->Render();
+	glUseProgram(0);
 }
 
 static bool g_bDrawLookatPoint = false;
@@ -249,7 +253,7 @@ void display()
 	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	if(g_pConeMesh && g_pCylinderMesh && g_pCubeTintMesh && g_pCubeColorMesh && g_pPlaneMesh)
+	if(g_pConeMesh && g_pCylinderMesh &&  g_pCubeColorMesh && g_pPlaneMesh)
 	{
 		const glm::vec3 &camPos = ResolveCamPosition();
 
@@ -290,6 +294,9 @@ void display()
 
 		//Draw the trees
 		DrawForest(modelMatrix);
+
+		// Draw the cone
+		DrawCone(modelMatrix);
 
 		if(g_bDrawLookatPoint)
 		{
@@ -345,8 +352,6 @@ void keyboard(unsigned char key, int x, int y)
 		g_pConeMesh = NULL;
 		delete g_pCylinderMesh;
 		g_pCylinderMesh = NULL;
-		delete g_pCubeTintMesh;
-		g_pCubeTintMesh = NULL;
 		delete g_pCubeColorMesh;
 		g_pCubeColorMesh = NULL;
 		delete g_pPlaneMesh;
