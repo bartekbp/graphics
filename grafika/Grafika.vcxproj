@@ -112,7 +112,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="World Scene.cpp">
+    <ClCompile Include="Car.cpp" />
+    <ClCompile Include="Defaults.cpp" />
+    <ClCompile Include="Display.cpp" />
+    <ClCompile Include="Keyboard.cpp" />
+    <ClCompile Include="Reshape.cpp" />
+    <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="Variables.cpp" />
+    <ClCompile Include="Init.cpp">
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -121,6 +128,11 @@
     <None Include="data\ColorPassthrough.frag" />
     <None Include="data\ColorMultUniform.frag" />
     <None Include="data\ColorUniform.frag" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Car.h" />
+    <ClInclude Include="Utils.h" />
+    <ClInclude Include="Variables.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

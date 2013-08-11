@@ -1,28 +1,40 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<ItemGroup>
-		<Filter Include="data">
-			<UniqueIdentifier>{307711EE-E82A-A245-815A-E70E09C8FFA1}</UniqueIdentifier>
-		</Filter>
-	</ItemGroup>
-	<ItemGroup>
-		<ClCompile Include="World Scene.cpp" />
-	</ItemGroup>
-	<ItemGroup>
-		<None Include="data\PosOnlyWorldTransform.vert">
-			<Filter>data</Filter>
-		</None>
-		<None Include="data\PosColorWorldTransform.vert">
-			<Filter>data</Filter>
-		</None>
-		<None Include="data\ColorPassthrough.frag">
-			<Filter>data</Filter>
-		</None>
-		<None Include="data\ColorMultUniform.frag">
-			<Filter>data</Filter>
-		</None>
-		<None Include="data\ColorUniform.frag">
-			<Filter>data</Filter>
-		</None>
-	</ItemGroup>
+  <ItemGroup>
+    <Filter Include="data">
+      <UniqueIdentifier>{307711EE-E82A-A245-815A-E70E09C8FFA1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Defaults.cpp" />
+    <ClCompile Include="Display.cpp" />
+    <ClCompile Include="Variables.cpp" />
+    <ClCompile Include="Reshape.cpp" />
+    <ClCompile Include="Keyboard.cpp" />
+    <ClCompile Include="Init.cpp" />
+    <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="Car.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data\PosOnlyWorldTransform.vert">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\PosColorWorldTransform.vert">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\ColorPassthrough.frag">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\ColorMultUniform.frag">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\ColorUniform.frag">
+      <Filter>data</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Variables.h" />
+    <ClInclude Include="Utils.h" />
+    <ClInclude Include="Car.h" />
+  </ItemGroup>
 </Project>
