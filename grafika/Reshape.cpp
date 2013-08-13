@@ -1,7 +1,5 @@
 #include "Variables.h"
 
-//Called whenever the window is resized. The new window size is given, in pixels.
-//This is an opportunity to call glViewport or glScissor to keep up with the change in size.
 void reshape (int w, int h)
 {
 	glutil::MatrixStack persMatrix;
@@ -13,6 +11,8 @@ void reshape (int w, int h)
 	glUniformMatrix4fv(ObjectColor.cameraToClipMatrixUnif, 1, GL_FALSE, glm::value_ptr(persMatrix.Top()));
 	glUseProgram(UniformColorTint.theProgram);
 	glUniformMatrix4fv(UniformColorTint.cameraToClipMatrixUnif, 1, GL_FALSE, glm::value_ptr(persMatrix.Top()));
+	glUseProgram(ShipProgram.theProgram);
+	glUniformMatrix4fv(ShipProgram.cameraToClipMatrixUnif, 1, GL_FALSE, glm::value_ptr(persMatrix.Top()));
 	glUseProgram(0);
 
 	glViewport(0, 0, (GLsizei) w, (GLsizei) h);

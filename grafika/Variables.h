@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Car.h"
+#include "../framework/Timer.h"
 
 #include <vector>
 
@@ -22,6 +23,17 @@ struct ProgramData
 	GLuint baseColorUnif;
 };
 
+struct ShipProgramData
+{
+	GLuint theProgram;
+	GLuint modelSpaceLightPosUnif;
+	GLuint lightIntensityUnif;
+	GLuint ambientIntensityUnif;
+	GLuint worldToCameraMatrixUnif;
+	GLuint cameraToClipMatrixUnif;
+	GLuint modelToWorldMatrixUnif;
+};
+
 struct TreeData
 {
 	float fXPos;
@@ -31,14 +43,18 @@ struct TreeData
 };
 
 
+extern GLuint g_projectionUniformBuffer;
+
+
 extern ProgramData UniformColor;
 extern ProgramData ObjectColor;
 extern ProgramData UniformColorTint;
+extern ShipProgramData ShipProgram;
 
 extern Framework::Mesh *g_pConeMesh;
 extern Framework::Mesh *g_pCylinderMesh;
-extern Framework::Mesh *g_pCubeColorMesh;
 extern Framework::Mesh *g_pPlaneMesh;
+extern Framework::Mesh *g_pShip;
 
 extern Car *car;
 
@@ -56,3 +72,8 @@ extern glm::vec3 g_sphereCamRelPos;
 
 extern float g_fzNear;
 extern float g_fzFar;
+
+extern float g_fLightHeight;
+extern float g_fLightRadius;
+
+extern Framework::Timer g_LightTimer;

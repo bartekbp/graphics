@@ -123,6 +123,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="data\FragmentLighting.frag" />
+    <None Include="data\FragmentLighting_PCN.vert" />
     <None Include="data\PosOnlyWorldTransform.vert" />
     <None Include="data\PosColorWorldTransform.vert" />
     <None Include="data\ColorPassthrough.frag" />

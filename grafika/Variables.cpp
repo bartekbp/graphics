@@ -3,11 +3,12 @@
 ProgramData UniformColor;
 ProgramData ObjectColor;
 ProgramData UniformColorTint;
+ShipProgramData ShipProgram;
 
 Framework::Mesh *g_pConeMesh = NULL;
 Framework::Mesh *g_pCylinderMesh = NULL;
-Framework::Mesh *g_pCubeColorMesh = NULL;
 Framework::Mesh *g_pPlaneMesh = NULL;
+Framework::Mesh *g_pShip = NULL;
 
 GLuint car_vao;
 GLuint car_vbo;
@@ -28,5 +29,9 @@ float g_fzNear = 1.0f;
 float g_fzFar = 1000.0f;
 
 
+float g_fLightHeight = 3.0f;
+float g_fLightRadius = 3.0f;
+
 Car* car = NULL;
 
+Framework::Timer g_LightTimer(Framework::Timer::TT_LOOP, 5.0f);

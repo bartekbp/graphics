@@ -1,9 +1,5 @@
 #include "Variables.h"
 
-//Called whenever a key on the keyboard was pressed.
-//The key is given by the ''key'' parameter, which is in ASCII.
-//It's often a good idea to have the escape key (ASCII value 27) call glutLeaveMainLoop() to 
-//exit the program.
 void keyboard(unsigned char key, int x, int y)
 {
 	switch (key)
@@ -13,8 +9,6 @@ void keyboard(unsigned char key, int x, int y)
 		g_pConeMesh = NULL;
 		delete g_pCylinderMesh;
 		g_pCylinderMesh = NULL;
-		delete g_pCubeColorMesh;
-		g_pCubeColorMesh = NULL;
 		delete g_pPlaneMesh;
 		g_pPlaneMesh = NULL;
 		delete car;
@@ -47,8 +41,8 @@ void keyboard(unsigned char key, int x, int y)
 	case 'U': g_sphereCamRelPos.z += 0.5f; break;
 	case '1': car->turn(0.15f); break;
 	case '2': car->turn(-0.15f); break;
-	case '3': car->move(0.5f); break;
-	case '4': car->move(-0.5f); break;
+	case '3': car->move(1.0f); break;
+	case '4': car->move(-0.8f); break;
 		
 	case 32:
 		g_bDrawLookatPoint = !g_bDrawLookatPoint;

@@ -31,6 +31,12 @@
     <None Include="data\ColorUniform.frag">
       <Filter>data</Filter>
     </None>
+    <None Include="data\FragmentLighting.frag">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\FragmentLighting_PCN.vert">
+      <Filter>data</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Variables.h" />
