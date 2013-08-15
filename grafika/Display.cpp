@@ -119,14 +119,23 @@ void DrawShip(glutil::MatrixStack &modelMatrix)
 	modelMatrix.Scale(3);
 	modelMatrix.Rotate(glm::vec3(0, 1, 0), -34);
 
-	g_LightTimer.Update();
-	glm::vec4 lightPosModelSpace = CalcLightPosition();
-
+	
 	glUseProgram(ShipProgram.theProgram);
-	glUniform3fv(ShipProgram.modelSpaceLightPosUnif, 1, glm::value_ptr(lightPosModelSpace));
+
+	glUniform1f(ShipProgram.shininess, 2.3f);
+	glUniform3f(ShipProgram.ks, 0.5f, 0.5f, 0.5f);
+	glUniform3f(ShipProgram.ka, 0.2f, 0.2f, 0.2f);
+	glUniform3f(ShipProgram.kd, 0.3f, 0.3f, 0.3f);
+
+	glUniform1f(ShipProgram.spotLight.cutoffUnif, 73.0);
+	glUniform1f(ShipProgram.spotLight.exponentUnif, 3.0);
+
+	glUniform3fv(ShipProgram.spotLight.directionUnif, 1, glm::value_ptr(car->reflectorDirection()));
+	glUniform3fv(ShipProgram.spotLight.intensityUnif, 1, glm::value_ptr(glm::vec3(0.8, 0.8, 0.8)));
+	glUniform4fv(ShipProgram.spotLight.positionLeftUnif, 1, glm::value_ptr(glm::vec4(car->leftReflectorPosition(), 1.0)));
+	glUniform4fv(ShipProgram.spotLight.positionRightUnif, 1, glm::value_ptr(glm::vec4(car->rightReflectorPosition(), 1.0)));
+
 	glUniformMatrix4fv(ShipProgram.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
-	glUniform4f(ShipProgram.lightIntensityUnif, 0.8f, 0.8f, 0.8f, 1.0f);
-	glUniform4f(ShipProgram.ambientIntensityUnif, 0.2f, 0.2f, 0.2f, 1.0f);
 	g_pShip->Render();
 
 	glUseProgram(0);

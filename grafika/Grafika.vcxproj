@@ -130,6 +130,8 @@
     <None Include="data\ColorPassthrough.frag" />
     <None Include="data\ColorMultUniform.frag" />
     <None Include="data\ColorUniform.frag" />
+    <None Include="data\Ship.frag" />
+    <None Include="data\Ship.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Car.h" />

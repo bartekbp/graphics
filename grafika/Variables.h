@@ -14,6 +14,31 @@
 
 #define COUNT(a) sizeof(a) / sizeof(a[0])
 
+struct SpotLightInfo {
+    GLuint positionLeftUnif;		// Position in world coords
+	GLuint positionRightUnif;		// Position in world coords
+    GLuint intensityUnif;
+    GLuint directionUnif;		// Direction of the spotlight in model coords.
+    GLuint exponentUnif;		// Angular attenuation exponent
+    GLuint cutoffUnif;			// Cutoff angle (between 0 and 90)
+};
+
+struct ShipProgramData
+{
+	GLuint theProgram;
+	
+	SpotLightInfo spotLight;
+
+	GLuint kd;					// Diffuse reflectivity
+	GLuint ka;					// Ambient reflectivity
+	GLuint ks;					// Specular reflectivity
+	GLuint shininess;			// Specular shininess factor
+
+	GLuint worldToCameraMatrixUnif;
+	GLuint modelToWorldMatrixUnif;
+	GLuint cameraToClipMatrixUnif;
+};
+
 struct ProgramData
 {
 	GLuint theProgram;
@@ -21,17 +46,6 @@ struct ProgramData
 	GLuint worldToCameraMatrixUnif;
 	GLuint cameraToClipMatrixUnif;
 	GLuint baseColorUnif;
-};
-
-struct ShipProgramData
-{
-	GLuint theProgram;
-	GLuint modelSpaceLightPosUnif;
-	GLuint lightIntensityUnif;
-	GLuint ambientIntensityUnif;
-	GLuint worldToCameraMatrixUnif;
-	GLuint cameraToClipMatrixUnif;
-	GLuint modelToWorldMatrixUnif;
 };
 
 struct TreeData
@@ -50,6 +64,7 @@ extern ProgramData UniformColor;
 extern ProgramData ObjectColor;
 extern ProgramData UniformColorTint;
 extern ShipProgramData ShipProgram;
+
 
 extern Framework::Mesh *g_pConeMesh;
 extern Framework::Mesh *g_pCylinderMesh;

@@ -25,21 +25,32 @@ ProgramData LoadProgram(const std::string &strVertexShader, const std::string &s
 	return data;
 }
 
+
 ShipProgramData LoadShipProgram()
 {
 	std::vector<GLuint> shaderList;
 
-	shaderList.push_back(Framework::LoadShader(GL_VERTEX_SHADER, "FragmentLighting_PCN.vert"));
-	shaderList.push_back(Framework::LoadShader(GL_FRAGMENT_SHADER, "FragmentLighting.frag"));
+	shaderList.push_back(Framework::LoadShader(GL_VERTEX_SHADER, "Ship.vert"));
+	shaderList.push_back(Framework::LoadShader(GL_FRAGMENT_SHADER, "Ship.frag"));
 
 	ShipProgramData data;
 	data.theProgram = Framework::CreateProgram(shaderList);
-	data.modelToWorldMatrixUnif = glGetUniformLocation(data.theProgram, "modelToWorldMatrix");
+	
+	data.spotLight.positionLeftUnif = glGetUniformLocation(data.theProgram, "Spot.positionLeft");
+	data.spotLight.positionRightUnif = glGetUniformLocation(data.theProgram, "Spot.positionRight");
+	data.spotLight.intensityUnif = glGetUniformLocation(data.theProgram, "Spot.intensity");
+	data.spotLight.directionUnif = glGetUniformLocation(data.theProgram, "Spot.direction");
+	data.spotLight.exponentUnif = glGetUniformLocation(data.theProgram, "Spot.exponent");
+	data.spotLight.cutoffUnif = glGetUniformLocation(data.theProgram, "Spot.cutoff");
+	
+	data.kd = glGetUniformLocation(data.theProgram, "Kd");
+	data.ka = glGetUniformLocation(data.theProgram, "Ka");
+	data.ks = glGetUniformLocation(data.theProgram, "Ks");
+	data.shininess = glGetUniformLocation(data.theProgram, "Shininess");
+
 	data.worldToCameraMatrixUnif = glGetUniformLocation(data.theProgram, "worldToCameraMatrix");
-	data.modelSpaceLightPosUnif = glGetUniformLocation(data.theProgram, "modelSpaceLightPos");
-	data.lightIntensityUnif = glGetUniformLocation(data.theProgram, "lightIntensity");
-	data.ambientIntensityUnif = glGetUniformLocation(data.theProgram, "ambientIntensity");
 	data.cameraToClipMatrixUnif = glGetUniformLocation(data.theProgram, "cameraToClipMatrix");
+	data.modelToWorldMatrixUnif = glGetUniformLocation(data.theProgram, "modelToWorldMatrix");
 
 	return data;
 }
