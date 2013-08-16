@@ -18,6 +18,11 @@ Car::Car(GLfloat* data, GLuint size, GLuint verticesCount) : _data(data), _descr
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+GLfloat Car::x() { return this->_x; }
+GLfloat Car::z() { return this->_z; }
+GLfloat Car::scale() { return this->_scale; }
+GLfloat Car::degree() { return this->_degree; }
+
 void Car::Render()
 {
 	glBindVertexArray(_vao);
@@ -46,45 +51,13 @@ void Car::turn(GLfloat degree)
 	_degree += degree;
 }
 
-glm::vec3 Car::leftReflectorPosition()
-{
-	glm::vec4 baseReflectorPosition(0.1, 0.2, 0.5, 1);
-	return glm::vec3(modelToWorldMatrix() * baseReflectorPosition);
-}
-
-glm::vec3 Car::rightReflectorPosition()
-{
-	glm::vec4 baseReflectorPosition(0.1, 0.2, 0.5, 1);
-	return glm::vec3(modelToWorldMatrix() * baseReflectorPosition);
-}
-
 glm::vec3 Car::reflectorDirection()
 {
 	glutil::MatrixStack modelMatrix;
 
 	modelMatrix.RotateY(glm::degrees(_degree));
 
-	glm::vec4 modelReflectorDirection(0.0, 0.0, 1.0, 1.0);
-	return glm::vec3(modelMatrix.Top() * modelReflectorDirection);
-}
-
-glm::mat4 Car::modelToWorldMatrix(glutil::MatrixStack &modelMatrix)
-{
-	glutil::PushStack push(modelMatrix);
-
-	modelMatrix.Translate(_x, 0, _z);
-	modelMatrix.Scale(_scale);
-	modelMatrix.RotateY(glm::degrees(_degree));
-
-	return modelMatrix.Top();
-}
-
-
-glm::mat4 Car::modelToWorldMatrix()
-{
-	glutil::MatrixStack modelMatrix;
-
-	return modelToWorldMatrix(modelMatrix);
+	return glm::vec3(modelMatrix.Top() * glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
 }
 
 void Car::emptySpaceHandler(bool (*fun)(GLfloat x, GLfloat z))

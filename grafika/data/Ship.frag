@@ -5,27 +5,27 @@ in vec3 vertexNormal;
 in vec4 diffuseColor;
 
 struct SpotLightInfo {
-    vec4 positionLeft;			// Position in world coords
-	vec4 positionRight;			// Position in world coords
+    vec4 positionLeftReflector;			// Position in world coords
+	vec4 positionRightReflector;			// Position in world coords
     vec3 intensity;
-    vec3 direction;			// Direction of the spotlight in model coords.
-    float exponent;			// Angular attenuation exponent
-    float cutoff;			// Cutoff angle (between 0 and 90)
+    vec3 direction;				// Direction of the spotlight in model coords.
+    float exponent;				// Angular attenuation exponent
+    float cutoff;				// Cutoff angle (between 0 and 90)
 };
 
 uniform SpotLightInfo Spot;
-uniform vec3 Kd;			// Diffuse reflectivity
-uniform vec3 Ka;			// Ambient reflectivity
-uniform vec3 Ks;			// Specular reflectivity
-uniform float Shininess;	// Specular shininess factor
+uniform vec3 Kd;				// Diffuse reflectivity
+uniform vec3 Ka;				// Ambient reflectivity
+uniform vec3 Ks;				// Specular reflectivity
+uniform float Shininess;		// Specular shininess factor
 
 out vec4 outputColor;
 
 vec3 adsWithSpotlight()
 {
 	vec3 ambient = Spot.intensity * Ka;
-	vec3 sl = normalize(vec3(Spot.positionLeft) - worldSpacePosition);
-	vec3 sr = normalize(vec3(Spot.positionRight) - worldSpacePosition);
+	vec3 sl = normalize(vec3(Spot.positionLeftReflector) - worldSpacePosition);
+	vec3 sr = normalize(vec3(Spot.positionRightReflector) - worldSpacePosition);
     vec3 spotDir = normalize(Spot.direction);
     float anglel = acos(dot(-sl, spotDir));
 	float angler = acos(dot(-sr, spotDir));
@@ -56,5 +56,5 @@ vec3 adsWithSpotlight()
 
 void main()
 {
-    outputColor =  vec4(adsWithSpotlight(), 1.0f) * diffuseColor;
+    outputColor = vec4(adsWithSpotlight(), 1.0f) * diffuseColor;
 }

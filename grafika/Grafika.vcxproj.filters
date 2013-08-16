@@ -14,6 +14,7 @@
     <ClCompile Include="Init.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Car.cpp" />
+    <ClCompile Include="Mouse.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="data\PosOnlyWorldTransform.vert">

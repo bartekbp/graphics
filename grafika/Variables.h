@@ -15,8 +15,8 @@
 #define COUNT(a) sizeof(a) / sizeof(a[0])
 
 struct SpotLightInfo {
-    GLuint positionLeftUnif;		// Position in world coords
-	GLuint positionRightUnif;		// Position in world coords
+    GLuint positionLeftReflectorUnif;		// Position in world coords
+	GLuint positionRightReflectorUnif;		// Position in world coords
     GLuint intensityUnif;
     GLuint directionUnif;		// Direction of the spotlight in model coords.
     GLuint exponentUnif;		// Angular attenuation exponent
@@ -34,8 +34,8 @@ struct ShipProgramData
 	GLuint ks;					// Specular reflectivity
 	GLuint shininess;			// Specular shininess factor
 
-	GLuint worldToCameraMatrixUnif;
 	GLuint modelToWorldMatrixUnif;
+	GLuint worldToCameraMatrixUnif;
 	GLuint cameraToClipMatrixUnif;
 };
 
@@ -43,7 +43,6 @@ struct ProgramData
 {
 	GLuint theProgram;
 	GLuint modelToWorldMatrixUnif;
-	GLuint worldToCameraMatrixUnif;
 	GLuint cameraToClipMatrixUnif;
 	GLuint baseColorUnif;
 };
@@ -58,7 +57,6 @@ struct TreeData
 
 
 extern GLuint g_projectionUniformBuffer;
-
 
 extern ProgramData UniformColor;
 extern ProgramData ObjectColor;
@@ -75,15 +73,8 @@ extern Car *car;
 
 extern std::vector<TreeData> g_forest;
 
-extern float g_fYAngle;
-extern float g_fXAngle;
-
 
 extern bool g_bDrawLookatPoint;
-extern glm::vec3 g_camTarget;
-
-//In spherical coordinates.
-extern glm::vec3 g_sphereCamRelPos;
 
 extern float g_fzNear;
 extern float g_fzFar;
@@ -92,3 +83,5 @@ extern float g_fLightHeight;
 extern float g_fLightRadius;
 
 extern Framework::Timer g_LightTimer;
+
+extern glutil::ViewPole g_viewPole;

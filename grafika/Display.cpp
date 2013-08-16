@@ -3,42 +3,6 @@
 
 using Framework::Timer;
 
-glm::mat4 CalcWorldToCameraMatrix(const glm::vec3 &cameraPt, const glm::vec3 &lookPt, const glm::vec3 &upPt)
-{
-	glm::vec3 lookDir = glm::normalize(lookPt - cameraPt);
-	glm::vec3 upDir = glm::normalize(upPt);
-
-	glm::vec3 rightDir = glm::normalize(glm::cross(lookDir, upDir));
-	glm::vec3 perpUpDir = glm::cross(rightDir, lookDir);
-
-	glm::mat4 rotMat(1.0f);
-	rotMat[0] = glm::vec4(rightDir, 0.0f);
-	rotMat[1] = glm::vec4(perpUpDir, 0.0f);
-	rotMat[2] = glm::vec4(-lookDir, 0.0f);
-
-	rotMat = glm::transpose(rotMat);
-
-	glm::mat4 transMat(1.0f);
-	transMat[3] = glm::vec4(-cameraPt, 1.0f);
-
-	return rotMat * transMat;
-}
-
-glm::vec3 ResolveCamPosition()
-{
-	glutil::MatrixStack tempMat;
-
-	float phi = Framework::DegToRad(g_sphereCamRelPos.x);
-	float theta = Framework::DegToRad(g_sphereCamRelPos.y + 90.0f);
-
-	float fSinTheta = sinf(theta);
-	float fCosTheta = cosf(theta);
-	float fCosPhi = cosf(phi);
-	float fSinPhi = sinf(phi);
-
-	glm::vec3 dirToCamera(fSinTheta * fCosPhi, fCosTheta, fSinTheta * fSinPhi);
-	return (dirToCamera * g_sphereCamRelPos.z) + g_camTarget;
-}
 
 void DrawTrunk(glutil::MatrixStack &modelMatrix, float fTrunkHeight)
 {
@@ -87,37 +51,72 @@ void DrawForest(glutil::MatrixStack &modelMatrix)
 	}
 }
 
-void DrawCar(glutil::MatrixStack &modelMatrix)
+void DrawLight(glutil::MatrixStack &modelMatrix, float moveRight, float yScale, glm::vec4 color)
 {
-	glm::mat4 carModelMatrix = car->modelToWorldMatrix(modelMatrix);
+	glutil::PushStack push(modelMatrix);
+
+	modelMatrix.Translate(car->x(), 5.0f, car->z());
+	modelMatrix.RotateY(glm::degrees(car->degree()));
+	modelMatrix.Translate(moveRight, 0, 0);
+	modelMatrix.RotateZ(90);
+	modelMatrix.Scale(1.0f, yScale, 1.0f);
 
 	glUseProgram(UniformColor.theProgram);
-	glUniformMatrix4fv(UniformColor.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(carModelMatrix));
-	glUniform4f(UniformColor.baseColorUnif, 0.2f, 0.2f, 0.7f, 1.0f);
-	car->Render();
-	
+	glUniformMatrix4fv(UniformColor.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
+	glUniform4f(UniformColor.baseColorUnif, color.r, color.g, color.b, color.a);	
+	g_pCylinderMesh->Render();
+
 	glUseProgram(0);
 }
 
-glm::vec4 CalcLightPosition()
+void DrawCarLights(glutil::MatrixStack &modelMatrix)
 {
-	float fCurrTimeThroughLoop = g_LightTimer.GetAlpha();
+	DrawLight(modelMatrix, 0.6f, 1.0f, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	DrawLight(modelMatrix, 0.0f, 0.25f, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	DrawLight(modelMatrix, -0.6f, 1.0f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+}
 
-	glm::vec4 ret(0.0f, g_fLightHeight, 0.0f, 1.0f);
 
-	ret.x = cosf(fCurrTimeThroughLoop * (3.14159f * 2.0f)) * g_fLightRadius;
-	ret.z = sinf(fCurrTimeThroughLoop * (3.14159f * 2.0f)) * g_fLightRadius;
+void DrawCar(glutil::MatrixStack &modelMatrix)
+{
+	glutil::PushStack push(modelMatrix);
 
-	return ret;
+	modelMatrix.Translate(car->x(), 0, car->z());
+	modelMatrix.Scale(car->scale());
+	modelMatrix.RotateY(glm::degrees(car->degree()));
+
+	glUseProgram(UniformColor.theProgram);
+	glUniformMatrix4fv(UniformColor.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
+	glUniform4f(UniformColor.baseColorUnif, 0.2f, 0.2f, 0.7f, 1.0f);
+	car->Render();
+
+	glUseProgram(0);
+}
+
+void SendReflectorPosition(glutil::MatrixStack &modelMatrix, GLuint reflector, float relativePositionX, float relativePositionY, float relativePositionZ)
+{
+	glutil::PushStack push(modelMatrix);
+	modelMatrix.SetIdentity();
+
+	glm::vec4 basePosition(relativePositionX, relativePositionY, relativePositionZ, 1.0f);
+	modelMatrix.Translate(car->x(), 0.0f, car->z());
+	modelMatrix.Scale(car->scale());
+	modelMatrix.RotateY(glm::degrees(car->degree()));
+
+	glUniform4fv(reflector, 1, glm::value_ptr(modelMatrix.Top() * basePosition));
 }
 
 void DrawShip(glutil::MatrixStack &modelMatrix)
 {
 	glutil::PushStack push(modelMatrix);
 
-	modelMatrix.Translate(glm::vec3(0.0f, 0.0f, 50.0f));
+	glm::mat4 worldToCamera = modelMatrix.Top();
+
+	modelMatrix.SetIdentity();
+	modelMatrix.Translate(glm::vec3(0.0f, 2.0f, 50.0f));
 	modelMatrix.Scale(3);
-	modelMatrix.Rotate(glm::vec3(0, 1, 0), -34);
+	modelMatrix.Rotate(glm::vec3(0, 1.0f, 0), -34);
+	modelMatrix.Rotate(glm::vec3(0.5, 0.0, 0.5), 10);
 
 	
 	glUseProgram(ShipProgram.theProgram);
@@ -132,10 +131,12 @@ void DrawShip(glutil::MatrixStack &modelMatrix)
 
 	glUniform3fv(ShipProgram.spotLight.directionUnif, 1, glm::value_ptr(car->reflectorDirection()));
 	glUniform3fv(ShipProgram.spotLight.intensityUnif, 1, glm::value_ptr(glm::vec3(0.8, 0.8, 0.8)));
-	glUniform4fv(ShipProgram.spotLight.positionLeftUnif, 1, glm::value_ptr(glm::vec4(car->leftReflectorPosition(), 1.0)));
-	glUniform4fv(ShipProgram.spotLight.positionRightUnif, 1, glm::value_ptr(glm::vec4(car->rightReflectorPosition(), 1.0)));
+
+	SendReflectorPosition(modelMatrix, ShipProgram.spotLight.positionLeftReflectorUnif, -0.2f, 0.2f, -0.5f);
+	SendReflectorPosition(modelMatrix, ShipProgram.spotLight.positionRightReflectorUnif, 0.2f, 0.2f, -0.5f);
 
 	glUniformMatrix4fv(ShipProgram.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
+	glUniformMatrix4fv(ShipProgram.worldToCameraMatrixUnif, 1, GL_FALSE, glm::value_ptr(worldToCamera));
 	g_pShip->Render();
 
 	glUseProgram(0);
@@ -178,31 +179,13 @@ void DrawGround(glutil::MatrixStack &modelMatrix)
 	DrawRoad(modelMatrix);
 }
 
-void SendWorldToCameraMatrix(glm::vec3 &camPos)
-{
-	glutil::MatrixStack camMatrix;
-	camMatrix.SetMatrix(CalcWorldToCameraMatrix(camPos, g_camTarget, glm::vec3(0.0f, 1.0f, 0.0f)));
-
-	glUseProgram(UniformColor.theProgram);
-	glUniformMatrix4fv(UniformColor.worldToCameraMatrixUnif, 1, GL_FALSE, glm::value_ptr(camMatrix.Top()));
-	glUseProgram(ObjectColor.theProgram);
-	glUniformMatrix4fv(ObjectColor.worldToCameraMatrixUnif, 1, GL_FALSE, glm::value_ptr(camMatrix.Top()));
-	glUseProgram(UniformColorTint.theProgram);
-	glUniformMatrix4fv(UniformColorTint.worldToCameraMatrixUnif, 1, GL_FALSE, glm::value_ptr(camMatrix.Top()));
-	glUseProgram(ShipProgram.theProgram);
-	glUniformMatrix4fv(ShipProgram.worldToCameraMatrixUnif, 1, GL_FALSE, glm::value_ptr(camMatrix.Top()));
-	glUseProgram(ObjectColor.theProgram);
-	glUniformMatrix4fv(ObjectColor.worldToCameraMatrixUnif, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0))); // vertex is already in camera space
-	glUseProgram(0);
-}
-
-void DrawLookAtPoint(glutil::MatrixStack &modelMatrix, glm::vec3 &camPos)
+void DrawLookAtPoint(glutil::MatrixStack &modelMatrix)
 {
 	glDisable(GL_DEPTH_TEST);
 	glutil::PushStack push(modelMatrix);
 
-	glm::vec3 cameraAimVec = g_camTarget - camPos;
-	modelMatrix.Translate(0.0f, 0.0, -glm::length(cameraAimVec));
+	modelMatrix.SetIdentity();
+	modelMatrix.Translate(glm::vec3(0.0f, 0.0f, -g_viewPole.GetView().radius));
 		
 	glUseProgram(ObjectColor.theProgram);
 	glUniformMatrix4fv(ObjectColor.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
@@ -220,11 +203,8 @@ void display()
 
 	if(g_pConeMesh && g_pCylinderMesh && g_pPlaneMesh)
 	{
-		glm::vec3 &camPos = ResolveCamPosition();
-
-		SendWorldToCameraMatrix(camPos);
-
 		glutil::MatrixStack modelMatrix;
+		modelMatrix.SetMatrix(g_viewPole.CalcMatrix());
 
 		DrawGround(modelMatrix);
 		
@@ -233,10 +213,11 @@ void display()
 		DrawShip(modelMatrix);
 
 		DrawCar(modelMatrix);
+		DrawCarLights(modelMatrix);
 
 		if(g_bDrawLookatPoint)
 		{
-			DrawLookAtPoint(modelMatrix, camPos);
+			DrawLookAtPoint(modelMatrix);
 		}
 
 	}

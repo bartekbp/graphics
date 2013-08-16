@@ -15,7 +15,7 @@ uniform mat4 cameraToClipMatrix;
 void main()
 {
 	worldSpacePosition = vec3(modelToWorldMatrix * vec4(position, 1.0));
-    gl_Position = cameraToClipMatrix * (worldToCameraMatrix * vec4(worldSpacePosition, 1.0f));
+    gl_Position = cameraToClipMatrix * worldToCameraMatrix * vec4(worldSpacePosition, 1.0);
     vertexNormal = normal;
     diffuseColor = inDiffuseColor;
 }

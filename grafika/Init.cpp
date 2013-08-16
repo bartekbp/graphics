@@ -8,6 +8,10 @@
 #include "Variables.h"
 #include "Utils.h"
 
+void MouseMotion(int x, int y);
+void MouseButton(int button, int state, int x, int y);
+void MouseWheel(int wheel, int direction, int x, int y);
+
 ProgramData LoadProgram(const std::string &strVertexShader, const std::string &strFragmentShader)
 {
 	std::vector<GLuint> shaderList;
@@ -18,7 +22,6 @@ ProgramData LoadProgram(const std::string &strVertexShader, const std::string &s
 	ProgramData data;
 	data.theProgram = Framework::CreateProgram(shaderList);
 	data.modelToWorldMatrixUnif = glGetUniformLocation(data.theProgram, "modelToWorldMatrix");
-	data.worldToCameraMatrixUnif = glGetUniformLocation(data.theProgram, "worldToCameraMatrix");
 	data.cameraToClipMatrixUnif = glGetUniformLocation(data.theProgram, "cameraToClipMatrix");
 	data.baseColorUnif = glGetUniformLocation(data.theProgram, "baseColor");
 
@@ -36,8 +39,8 @@ ShipProgramData LoadShipProgram()
 	ShipProgramData data;
 	data.theProgram = Framework::CreateProgram(shaderList);
 	
-	data.spotLight.positionLeftUnif = glGetUniformLocation(data.theProgram, "Spot.positionLeft");
-	data.spotLight.positionRightUnif = glGetUniformLocation(data.theProgram, "Spot.positionRight");
+	data.spotLight.positionLeftReflectorUnif = glGetUniformLocation(data.theProgram, "Spot.positionLeftReflector");
+	data.spotLight.positionRightReflectorUnif = glGetUniformLocation(data.theProgram, "Spot.positionRightReflector");
 	data.spotLight.intensityUnif = glGetUniformLocation(data.theProgram, "Spot.intensity");
 	data.spotLight.directionUnif = glGetUniformLocation(data.theProgram, "Spot.direction");
 	data.spotLight.exponentUnif = glGetUniformLocation(data.theProgram, "Spot.exponent");
@@ -48,9 +51,10 @@ ShipProgramData LoadShipProgram()
 	data.ks = glGetUniformLocation(data.theProgram, "Ks");
 	data.shininess = glGetUniformLocation(data.theProgram, "Shininess");
 
-	data.worldToCameraMatrixUnif = glGetUniformLocation(data.theProgram, "worldToCameraMatrix");
+
 	data.cameraToClipMatrixUnif = glGetUniformLocation(data.theProgram, "cameraToClipMatrix");
 	data.modelToWorldMatrixUnif = glGetUniformLocation(data.theProgram, "modelToWorldMatrix");
+	data.worldToCameraMatrixUnif = glGetUniformLocation(data.theProgram, "worldToCameraMatrix");
 
 	return data;
 }
@@ -106,7 +110,7 @@ bool emptySpace(GLfloat x, GLfloat z)
 		return false;
 	}
 
-	if(z < 70 && z > 30 && x < 18 && x > -15)
+	if(z < 70 && z > 33 && x < 18 && x > -15)
 	{
 		return false;
 	}
@@ -150,4 +154,8 @@ void init()
 	glDepthFunc(GL_LEQUAL);
 	glDepthRange(0.0f, 1.0f);
 	glEnable(GL_DEPTH_CLAMP);
+
+	glutMouseFunc(MouseButton);
+ 	glutMotionFunc(MouseMotion);
+	glutMouseWheelFunc(MouseWheel);
 }

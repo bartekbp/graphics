@@ -15,15 +15,7 @@ GLuint car_vbo;
 
 std::vector<TreeData> g_forest;
 
-float g_fYAngle = 0.0f;
-float g_fXAngle = 0.0f;
-
-
 bool g_bDrawLookatPoint = false;
-glm::vec3 g_camTarget(0.0f, 0.4f, 0.0f);
-
-//In spherical coordinates.
-glm::vec3 g_sphereCamRelPos(67.5f, -46.0f, 150.0f);
 
 float g_fzNear = 1.0f;
 float g_fzFar = 1000.0f;
@@ -35,3 +27,27 @@ float g_fLightRadius = 3.0f;
 Car* car = NULL;
 
 Framework::Timer g_LightTimer(Framework::Timer::TT_LOOP, 5.0f);
+
+glutil::ViewData g_initialViewData =
+{
+	glm::vec3(0.0f, 0.0f, -80.0f),
+	glm::fquat(0.92387953f, 0.3826834f, 0.0f, 0.0f),
+	100.0f,
+	0.0f
+};
+
+glutil::ViewScale g_viewScale =
+{
+	0.0f, 200.0f,
+	10.0f, 1.0f,
+	30.0f, 5.0f,
+	90.0f/250.0f
+};
+
+glutil::ObjectData g_initialObjectData =
+{
+	glm::vec3(0.0f, 20.0f, 0.0f),
+	glm::fquat(0.0f, 1.0f, 0.0f, 0.0f),
+};
+
+glutil::ViewPole g_viewPole = glutil::ViewPole(g_initialViewData, g_viewScale, glutil::MB_LEFT_BTN);
