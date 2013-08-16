@@ -92,7 +92,12 @@ extern float g_fzFar;
 extern float g_fLightHeight;
 extern float g_fLightRadius;
 
+extern float g_SphereDiffHeight;
+extern float g_fSphereBaseHeight;
+extern float g_fSphereRadius;
+
 extern Framework::Timer g_LightTimer;
 extern Framework::Timer g_TetrahedronTimer;
+extern Framework::Timer g_SphereTimer;
 
 extern glutil::ViewPole g_viewPole;

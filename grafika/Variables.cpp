@@ -26,10 +26,15 @@ float g_fzFar = 1000.0f;
 float g_fLightHeight = 0.0f;
 float g_fLightRadius = 30.0f;
 
+float g_SphereDiffHeight = 20.0f;
+float g_fSphereBaseHeight = 30.f;
+float g_fSphereRadius = 70.0f;
+
 Car* car = NULL;
 
 Framework::Timer g_LightTimer(Framework::Timer::TT_LOOP, 5.0f);
 Framework::Timer g_TetrahedronTimer(Framework::Timer::TT_LOOP, 10.0f);
+Framework::Timer g_SphereTimer(Framework::Timer::TT_LOOP, 4.0f);
 
 glutil::ViewData g_initialViewData =
 {

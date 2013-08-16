@@ -237,6 +237,31 @@ void DrawTetrahedron(glutil::MatrixStack &modelMatrix)
 	glUseProgram(0);
 }
 
+void DrawSphere(glutil::MatrixStack &modelMatrix)
+{
+	glutil::PushStack push(modelMatrix);
+
+	g_SphereTimer.Update();
+	float fCurrTimeThroughLoop = g_SphereTimer.GetAlpha();
+
+	glm::vec3 pos(0.0f);
+
+	pos.x = cosf(fCurrTimeThroughLoop * (3.14159f * 2.0f)) * g_fSphereRadius;
+	pos.z = sinf(fCurrTimeThroughLoop * (3.14159f * 2.0f)) * g_fSphereRadius - 50.0f;
+	pos.y = g_fSphereBaseHeight + sinf(fCurrTimeThroughLoop * (3.14159f * 2.0f)) * g_SphereDiffHeight;
+
+	modelMatrix.Translate(pos);
+	modelMatrix.Scale(10);
+
+	glUseProgram(UniformColor.theProgram);
+	glUniformMatrix4fv(UniformColor.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
+	glUniform4f(UniformColor.baseColorUnif, 0.8f, 0.8f, 0.7f, 1.0f);
+	g_pSphereMesh->Render();
+
+	glUseProgram(0);
+
+}
+
 void DrawLookAtPoint(glutil::MatrixStack &modelMatrix)
 {
 	glDisable(GL_DEPTH_TEST);
@@ -274,6 +299,8 @@ void display()
 		DrawCarLights(modelMatrix);
 
 		DrawTetrahedron(modelMatrix);
+
+		DrawSphere(modelMatrix);
 
 		if(g_bDrawLookatPoint)
 		{
