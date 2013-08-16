@@ -4,6 +4,9 @@
     <Filter Include="data">
       <UniqueIdentifier>{307711EE-E82A-A245-815A-E70E09C8FFA1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="meshes">
+      <UniqueIdentifier>{6bad0580-9adc-49b7-9aec-799dd169d868}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Defaults.cpp" />
@@ -23,25 +26,28 @@
     <None Include="data\PosColorWorldTransform.vert">
       <Filter>data</Filter>
     </None>
-    <None Include="data\ColorPassthrough.frag">
-      <Filter>data</Filter>
-    </None>
     <None Include="data\ColorMultUniform.frag">
       <Filter>data</Filter>
     </None>
     <None Include="data\ColorUniform.frag">
       <Filter>data</Filter>
     </None>
-    <None Include="data\FragmentLighting.frag">
+    <None Include="data\Reflectors.frag">
       <Filter>data</Filter>
     </None>
-    <None Include="data\FragmentLighting_PCN.vert">
+    <None Include="data\Reflectors.vert">
       <Filter>data</Filter>
     </None>
-    <None Include="data\Ship.frag">
+    <None Include="data\Lights.frag">
       <Filter>data</Filter>
     </None>
-    <None Include="data\Ship.vert">
+    <None Include="data\Lights.vert">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\ReflectorsAndLight.frag">
+      <Filter>data</Filter>
+    </None>
+    <None Include="data\ReflectorsAndLight.vert">
       <Filter>data</Filter>
     </None>
   </ItemGroup>
@@ -49,5 +55,28 @@
     <ClInclude Include="Variables.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Car.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="data\Ship.xml">
+      <Filter>meshes</Filter>
+    </Xml>
+    <Xml Include="data\UnitConeTint.xml">
+      <Filter>meshes</Filter>
+    </Xml>
+    <Xml Include="data\UnitCubeColor.xml">
+      <Filter>meshes</Filter>
+    </Xml>
+    <Xml Include="data\UnitCylinderTint.xml">
+      <Filter>meshes</Filter>
+    </Xml>
+    <Xml Include="data\UnitPlane.xml">
+      <Filter>meshes</Filter>
+    </Xml>
+    <Xml Include="data\UnitSphere.xml">
+      <Filter>meshes</Filter>
+    </Xml>
+    <Xml Include="data\UnitTetrahedron.xml">
+      <Filter>meshes</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

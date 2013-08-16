@@ -1,14 +1,16 @@
 #include "Variables.h"
 
+ProgramData ColorProvided;
 ProgramData UniformColor;
-ProgramData ObjectColor;
-ProgramData UniformColorTint;
-ShipProgramData ShipProgram;
+ReflectorsProgramData ReflectorsProgram;
+ReflectorsAndLightProgramData ReflectorsAndLightProgram;
 
 Framework::Mesh *g_pConeMesh = NULL;
 Framework::Mesh *g_pCylinderMesh = NULL;
 Framework::Mesh *g_pPlaneMesh = NULL;
 Framework::Mesh *g_pShip = NULL;
+Framework::Mesh *g_pTetrahedronMesh = NULL;
+Framework::Mesh *g_pSphereMesh = NULL;
 
 GLuint car_vao;
 GLuint car_vbo;
@@ -21,12 +23,13 @@ float g_fzNear = 1.0f;
 float g_fzFar = 1000.0f;
 
 
-float g_fLightHeight = 3.0f;
-float g_fLightRadius = 3.0f;
+float g_fLightHeight = 0.0f;
+float g_fLightRadius = 30.0f;
 
 Car* car = NULL;
 
 Framework::Timer g_LightTimer(Framework::Timer::TT_LOOP, 5.0f);
+Framework::Timer g_TetrahedronTimer(Framework::Timer::TT_LOOP, 10.0f);
 
 glutil::ViewData g_initialViewData =
 {

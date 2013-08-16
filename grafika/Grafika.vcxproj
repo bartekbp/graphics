@@ -124,20 +124,30 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="data\FragmentLighting.frag" />
-    <None Include="data\FragmentLighting_PCN.vert" />
+    <None Include="data\Lights.frag" />
+    <None Include="data\Lights.vert" />
     <None Include="data\PosOnlyWorldTransform.vert" />
     <None Include="data\PosColorWorldTransform.vert" />
-    <None Include="data\ColorPassthrough.frag" />
     <None Include="data\ColorMultUniform.frag" />
     <None Include="data\ColorUniform.frag" />
-    <None Include="data\Ship.frag" />
-    <None Include="data\Ship.vert" />
+    <None Include="data\Reflectors.frag" />
+    <None Include="data\Reflectors.vert" />
+    <None Include="data\ReflectorsAndLight.frag" />
+    <None Include="data\ReflectorsAndLight.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Car.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Variables.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="data\Ship.xml" />
+    <Xml Include="data\UnitConeTint.xml" />
+    <Xml Include="data\UnitCubeColor.xml" />
+    <Xml Include="data\UnitCylinderTint.xml" />
+    <Xml Include="data\UnitPlane.xml" />
+    <Xml Include="data\UnitSphere.xml" />
+    <Xml Include="data\UnitTetrahedron.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,5 +1,5 @@
 #include "Variables.h"
-
+#include <iostream>
 
 using Framework::Timer;
 
@@ -11,9 +11,9 @@ void DrawTrunk(glutil::MatrixStack &modelMatrix, float fTrunkHeight)
 	modelMatrix.Scale(glm::vec3(1.0f, fTrunkHeight, 1.0f));
 	modelMatrix.Translate(glm::vec3(0.0f, 0.5f, 0.0f));
 
-	glUseProgram(UniformColorTint.theProgram);
-	glUniformMatrix4fv(UniformColorTint.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
-	glUniform4f(UniformColorTint.baseColorUnif, 0.55f, 0.35f, 0.056f, 1.0f);
+	glUseProgram(ColorProvided.theProgram);
+	glUniformMatrix4fv(ColorProvided.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
+	glUniform4f(ColorProvided.baseColorUnif, 0.55f, 0.35f, 0.056f, 1.0f);
 	g_pCylinderMesh->Render();
 	glUseProgram(0);
 }
@@ -25,10 +25,11 @@ void DrawTreeTop(glutil::MatrixStack &modelMatrix, float fTrunkHeight, float fCo
 	modelMatrix.Translate(glm::vec3(0.0f, fTrunkHeight, 0.0f));
 	modelMatrix.Scale(glm::vec3(3.0f, fConeHeight, 3.0f));
 
-	glUseProgram(UniformColorTint.theProgram);
-	glUniformMatrix4fv(UniformColorTint.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
-	glUniform4f(UniformColorTint.baseColorUnif, 0.0f, 0.4f, 0.0f, 1.0f);
+	glUseProgram(ColorProvided.theProgram);
+	glUniformMatrix4fv(ColorProvided.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
+	glUniform4f(ColorProvided.baseColorUnif, 0.0f, 0.4f, 0.0f, 1.0f);
 	g_pConeMesh->Render();
+
 	glUseProgram(0);
 }
 
@@ -51,7 +52,7 @@ void DrawForest(glutil::MatrixStack &modelMatrix)
 	}
 }
 
-void DrawLight(glutil::MatrixStack &modelMatrix, float moveRight, float yScale, glm::vec4 color)
+void DrawCarLight(glutil::MatrixStack &modelMatrix, float moveRight, float yScale, glm::vec4 color)
 {
 	glutil::PushStack push(modelMatrix);
 
@@ -61,9 +62,9 @@ void DrawLight(glutil::MatrixStack &modelMatrix, float moveRight, float yScale, 
 	modelMatrix.RotateZ(90);
 	modelMatrix.Scale(1.0f, yScale, 1.0f);
 
-	glUseProgram(UniformColor.theProgram);
-	glUniformMatrix4fv(UniformColor.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
-	glUniform4f(UniformColor.baseColorUnif, color.r, color.g, color.b, color.a);	
+	glUseProgram(ColorProvided.theProgram);
+	glUniformMatrix4fv(ColorProvided.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
+	glUniform4f(ColorProvided.baseColorUnif, color.r, color.g, color.b, color.a);	
 	g_pCylinderMesh->Render();
 
 	glUseProgram(0);
@@ -71,9 +72,9 @@ void DrawLight(glutil::MatrixStack &modelMatrix, float moveRight, float yScale, 
 
 void DrawCarLights(glutil::MatrixStack &modelMatrix)
 {
-	DrawLight(modelMatrix, 0.6f, 1.0f, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	DrawLight(modelMatrix, 0.0f, 0.25f, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
-	DrawLight(modelMatrix, -0.6f, 1.0f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	DrawCarLight(modelMatrix, 0.6f, 1.0f, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	DrawCarLight(modelMatrix, 0.0f, 0.2f, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+	DrawCarLight(modelMatrix, -0.6f, 1.0f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 }
 
 
@@ -118,25 +119,24 @@ void DrawShip(glutil::MatrixStack &modelMatrix)
 	modelMatrix.Rotate(glm::vec3(0, 1.0f, 0), -34);
 	modelMatrix.Rotate(glm::vec3(0.5, 0.0, 0.5), 10);
 
-	
-	glUseProgram(ShipProgram.theProgram);
+	glUseProgram(ReflectorsProgram.theProgram);
 
-	glUniform1f(ShipProgram.shininess, 2.3f);
-	glUniform3f(ShipProgram.ks, 0.5f, 0.5f, 0.5f);
-	glUniform3f(ShipProgram.ka, 0.2f, 0.2f, 0.2f);
-	glUniform3f(ShipProgram.kd, 0.3f, 0.3f, 0.3f);
+	glUniform1f(ReflectorsProgram.shininess, 2.3f);
+	glUniform3f(ReflectorsProgram.ks, 0.5f, 0.5f, 0.5f);
+	glUniform3f(ReflectorsProgram.ka, 0.2f, 0.2f, 0.2f);
+	glUniform3f(ReflectorsProgram.kd, 0.3f, 0.3f, 0.3f);
 
-	glUniform1f(ShipProgram.spotLight.cutoffUnif, 73.0);
-	glUniform1f(ShipProgram.spotLight.exponentUnif, 3.0);
+	glUniform1f(ReflectorsProgram.spotLight.cutoffUnif, 73.0);
+	glUniform1f(ReflectorsProgram.spotLight.exponentUnif, 3.0);
 
-	glUniform3fv(ShipProgram.spotLight.directionUnif, 1, glm::value_ptr(car->reflectorDirection()));
-	glUniform3fv(ShipProgram.spotLight.intensityUnif, 1, glm::value_ptr(glm::vec3(0.8, 0.8, 0.8)));
+	glUniform3fv(ReflectorsProgram.spotLight.directionUnif, 1, glm::value_ptr(car->reflectorDirection()));
+	glUniform3fv(ReflectorsProgram.spotLight.intensityUnif, 1, glm::value_ptr(glm::vec3(0.8, 0.8, 0.8)));
 
-	SendReflectorPosition(modelMatrix, ShipProgram.spotLight.positionLeftReflectorUnif, -0.2f, 0.2f, -0.5f);
-	SendReflectorPosition(modelMatrix, ShipProgram.spotLight.positionRightReflectorUnif, 0.2f, 0.2f, -0.5f);
+	SendReflectorPosition(modelMatrix, ReflectorsProgram.spotLight.positionLeftReflectorUnif, -0.2f, 0.2f, -0.5f);
+	SendReflectorPosition(modelMatrix, ReflectorsProgram.spotLight.positionRightReflectorUnif, 0.2f, 0.2f, -0.5f);
 
-	glUniformMatrix4fv(ShipProgram.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
-	glUniformMatrix4fv(ShipProgram.worldToCameraMatrixUnif, 1, GL_FALSE, glm::value_ptr(worldToCamera));
+	glUniformMatrix4fv(ReflectorsProgram.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
+	glUniformMatrix4fv(ReflectorsProgram.worldToCameraMatrixUnif, 1, GL_FALSE, glm::value_ptr(worldToCamera));
 	g_pShip->Render();
 
 	glUseProgram(0);
@@ -179,6 +179,64 @@ void DrawGround(glutil::MatrixStack &modelMatrix)
 	DrawRoad(modelMatrix);
 }
 
+glm::vec4 CalcLightPosition()
+{
+	g_LightTimer.Update();
+	float fCurrTimeThroughLoop = g_LightTimer.GetAlpha();
+
+	glm::vec4 ret(0.0f, g_fLightHeight, 0.0f, 1.0f);
+
+	ret.x = cosf(fCurrTimeThroughLoop * (3.14159f * 2.0f)) * g_fLightRadius;
+	ret.z = sinf(fCurrTimeThroughLoop * (3.14159f * 2.0f)) * g_fLightRadius;
+
+	return ret;
+}
+
+void DrawTetrahedron(glutil::MatrixStack &modelMatrix)
+{
+	glutil::PushStack push(modelMatrix);
+	g_TetrahedronTimer.Update();
+
+	glm::mat4 worldToCamera = modelMatrix.Top();
+
+	modelMatrix.SetIdentity();
+	modelMatrix.Translate(40.0f, 2.0f, 75.0f);
+	modelMatrix.RotateY(360.0f * g_TetrahedronTimer.GetAlpha());
+	modelMatrix.Translate(1.0f, 1.0f + sqrtf(2.0f) * 10, 1.0f);
+	modelMatrix.Scale(10);
+	modelMatrix.Rotate(glm::vec3(-0.707f, 0.0f, -0.707f), 54.735f);
+	
+	glUseProgram(ReflectorsAndLightProgram.reflectorsProgramData.theProgram);
+
+	glUniform1f(ReflectorsAndLightProgram.reflectorsProgramData.shininess, 2.3f);
+	glUniform3f(ReflectorsAndLightProgram.reflectorsProgramData.ks, 0.5f, 0.5f, 0.5f);
+	glUniform3f(ReflectorsAndLightProgram.reflectorsProgramData.ka, 0.2f, 0.2f, 0.2f);
+	glUniform3f(ReflectorsAndLightProgram.reflectorsProgramData.kd, 0.3f, 0.3f, 0.3f);
+
+	glUniform1f(ReflectorsAndLightProgram.reflectorsProgramData.spotLight.cutoffUnif, 73.0f);
+	glUniform1f(ReflectorsAndLightProgram.reflectorsProgramData.spotLight.exponentUnif, 3.0f);
+
+	glUniform3fv(ReflectorsAndLightProgram.reflectorsProgramData.spotLight.directionUnif, 1, glm::value_ptr(car->reflectorDirection()));
+	glUniform3fv(ReflectorsAndLightProgram.reflectorsProgramData.spotLight.intensityUnif, 1, glm::value_ptr(glm::vec3(0.8f, 0.8f, 0.8f)));
+
+	SendReflectorPosition(modelMatrix, ReflectorsAndLightProgram.reflectorsProgramData.spotLight.positionLeftReflectorUnif, -0.2f, 0.2f, -0.5f);
+	SendReflectorPosition(modelMatrix, ReflectorsAndLightProgram.reflectorsProgramData.spotLight.positionRightReflectorUnif, 0.2f, 0.2f, -0.5f);
+
+	glUniformMatrix4fv(ReflectorsAndLightProgram.reflectorsProgramData.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
+	glUniformMatrix4fv(ReflectorsAndLightProgram.reflectorsProgramData.worldToCameraMatrixUnif, 1, GL_FALSE, glm::value_ptr(worldToCamera));
+
+	glUniform4fv(ReflectorsAndLightProgram.lightIntensityUnif, 1, glm::value_ptr(glm::vec4(0.7f, 0.7f, 0.7f, 1.0f)));
+
+	glm::vec3 modelLightPos(CalcLightPosition());
+	glm::vec3 worldLightPos(modelLightPos + glm::vec3(25.0f, 40.0f, 100.0f));
+	
+	glUniform3fv(ReflectorsAndLightProgram.worldSpaceLightPosUnif, 1, glm::value_ptr(worldLightPos));
+	
+	g_pTetrahedronMesh->Render();
+
+	glUseProgram(0);
+}
+
 void DrawLookAtPoint(glutil::MatrixStack &modelMatrix)
 {
 	glDisable(GL_DEPTH_TEST);
@@ -187,8 +245,8 @@ void DrawLookAtPoint(glutil::MatrixStack &modelMatrix)
 	modelMatrix.SetIdentity();
 	modelMatrix.Translate(glm::vec3(0.0f, 0.0f, -g_viewPole.GetView().radius));
 		
-	glUseProgram(ObjectColor.theProgram);
-	glUniformMatrix4fv(ObjectColor.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
+	glUseProgram(UniformColor.theProgram);
+	glUniformMatrix4fv(UniformColor.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
 	g_pCylinderMesh->Render();
 
 	glUseProgram(0);
@@ -214,6 +272,8 @@ void display()
 
 		DrawCar(modelMatrix);
 		DrawCarLights(modelMatrix);
+
+		DrawTetrahedron(modelMatrix);
 
 		if(g_bDrawLookatPoint)
 		{

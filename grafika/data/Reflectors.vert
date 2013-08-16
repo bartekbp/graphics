@@ -4,8 +4,8 @@ layout(location = 0) in vec3 position;
 layout(location = 1) in vec4 inDiffuseColor;
 layout(location = 2) in vec3 normal;
 
-out vec3 worldSpacePosition;
 out vec4 diffuseColor;
+out vec3 worldSpacePosition;
 out vec3 vertexNormal;
 
 uniform mat4 modelToWorldMatrix;

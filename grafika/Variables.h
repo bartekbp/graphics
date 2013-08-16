@@ -23,7 +23,7 @@ struct SpotLightInfo {
     GLuint cutoffUnif;			// Cutoff angle (between 0 and 90)
 };
 
-struct ShipProgramData
+struct ReflectorsProgramData
 {
 	GLuint theProgram;
 	
@@ -37,6 +37,14 @@ struct ShipProgramData
 	GLuint modelToWorldMatrixUnif;
 	GLuint worldToCameraMatrixUnif;
 	GLuint cameraToClipMatrixUnif;
+};
+
+struct ReflectorsAndLightProgramData
+{
+	struct ReflectorsProgramData reflectorsProgramData;
+
+	GLuint worldSpaceLightPosUnif;
+	GLuint lightIntensityUnif;
 };
 
 struct ProgramData
@@ -58,16 +66,18 @@ struct TreeData
 
 extern GLuint g_projectionUniformBuffer;
 
+extern ProgramData ColorProvided;
 extern ProgramData UniformColor;
-extern ProgramData ObjectColor;
-extern ProgramData UniformColorTint;
-extern ShipProgramData ShipProgram;
+extern ReflectorsProgramData ReflectorsProgram;
+extern ReflectorsAndLightProgramData ReflectorsAndLightProgram;
 
 
 extern Framework::Mesh *g_pConeMesh;
 extern Framework::Mesh *g_pCylinderMesh;
 extern Framework::Mesh *g_pPlaneMesh;
 extern Framework::Mesh *g_pShip;
+extern Framework::Mesh *g_pTetrahedronMesh;
+extern Framework::Mesh *g_pSphereMesh;
 
 extern Car *car;
 
@@ -83,5 +93,6 @@ extern float g_fLightHeight;
 extern float g_fLightRadius;
 
 extern Framework::Timer g_LightTimer;
+extern Framework::Timer g_TetrahedronTimer;
 
 extern glutil::ViewPole g_viewPole;

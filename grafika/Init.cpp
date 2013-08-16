@@ -29,14 +29,14 @@ ProgramData LoadProgram(const std::string &strVertexShader, const std::string &s
 }
 
 
-ShipProgramData LoadShipProgram()
+ReflectorsProgramData LoadReflectorsProgram(std::string vertexShared, std::string fragmentShader)
 {
 	std::vector<GLuint> shaderList;
 
-	shaderList.push_back(Framework::LoadShader(GL_VERTEX_SHADER, "Ship.vert"));
-	shaderList.push_back(Framework::LoadShader(GL_FRAGMENT_SHADER, "Ship.frag"));
+	shaderList.push_back(Framework::LoadShader(GL_VERTEX_SHADER, vertexShared));
+	shaderList.push_back(Framework::LoadShader(GL_FRAGMENT_SHADER, fragmentShader));
 
-	ShipProgramData data;
+	ReflectorsProgramData data;
 	data.theProgram = Framework::CreateProgram(shaderList);
 	
 	data.spotLight.positionLeftReflectorUnif = glGetUniformLocation(data.theProgram, "Spot.positionLeftReflector");
@@ -59,12 +59,24 @@ ShipProgramData LoadShipProgram()
 	return data;
 }
 
+ReflectorsAndLightProgramData LoadReflectorsAndLightsProgram(std::string vertexShader, std::string fragmentShader)
+{
+	ReflectorsProgramData reflectorsData = LoadReflectorsProgram(vertexShader, fragmentShader);
+
+	ReflectorsAndLightProgramData data;
+	data.reflectorsProgramData = reflectorsData;
+	data.worldSpaceLightPosUnif = glGetUniformLocation(data.reflectorsProgramData.theProgram, "worldSpaceLightPos");
+	data.lightIntensityUnif = glGetUniformLocation(data.reflectorsProgramData.theProgram, "lightIntensity");
+
+	return data;
+}
+
 void InitializeProgram()
 {
 	UniformColor = LoadProgram("PosOnlyWorldTransform.vert", "ColorUniform.frag");
-	ObjectColor = LoadProgram("PosColorWorldTransform.vert", "ColorPassthrough.frag");
-	UniformColorTint = LoadProgram("PosColorWorldTransform.vert", "ColorMultUniform.frag");
-	ShipProgram = LoadShipProgram();
+	ColorProvided = LoadProgram("PosColorWorldTransform.vert", "ColorMultUniform.frag");
+	ReflectorsProgram = LoadReflectorsProgram("Reflectors.vert", "Reflectors.frag");
+	ReflectorsAndLightProgram = LoadReflectorsAndLightsProgram("ReflectorsAndLight.vert", "ReflectorsAndLight.frag");
 }
 
 TreeData InitializeTree(float sx, float ex, float stepx, float sz, float ez, float stepz, float st, float et, float sc, float ec)
@@ -110,7 +122,12 @@ bool emptySpace(GLfloat x, GLfloat z)
 		return false;
 	}
 
-	if(z < 70 && z > 33 && x < 18 && x > -15)
+	if(z < 70 && z > 33 && x < 23 && x > -23)
+	{
+		return false;
+	}
+
+	if(z > 60 && x > 30)
 	{
 		return false;
 	}
@@ -126,6 +143,8 @@ void InitializeShaders()
 		g_pShip = new Framework::Mesh("Ship.xml");
 		g_pCylinderMesh = new Framework::Mesh("UnitCylinderTint.xml");
 		g_pPlaneMesh = new Framework::Mesh("UnitPlane.xml");
+		g_pTetrahedronMesh = new Framework::Mesh("UnitTetrahedron.xml");
+		g_pSphereMesh = new Framework::Mesh("UnitSphere.xml");
 	}
 	catch(std::exception &except)
 	{
