@@ -7,7 +7,7 @@ in vec4 diffuseColor;
 
 struct SpotLightInfo {
     vec4 positionLeftReflector;			// Position in world coords
-	vec4 positionRightReflector;			// Position in world coords
+	vec4 positionRightReflector;		// Position in world coords
     vec3 intensity;
     vec3 direction;				// Direction of the spotlight in model coords.
     float exponent;				// Angular attenuation exponent

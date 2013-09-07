@@ -32,12 +32,6 @@
     <None Include="data\ColorUniform.frag">
       <Filter>data</Filter>
     </None>
-    <None Include="data\Reflectors.frag">
-      <Filter>data</Filter>
-    </None>
-    <None Include="data\Reflectors.vert">
-      <Filter>data</Filter>
-    </None>
     <None Include="data\Lights.frag">
       <Filter>data</Filter>
     </None>
@@ -50,6 +44,8 @@
     <None Include="data\ReflectorsAndLight.vert">
       <Filter>data</Filter>
     </None>
+    <None Include="data\ColorUniformAndLight.frag" />
+    <None Include="data\ColorUniformAndLight.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Variables.h" />

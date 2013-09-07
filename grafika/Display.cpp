@@ -3,6 +3,18 @@
 
 using Framework::Timer;
 
+glm::vec4 CalcLightPosition()
+{
+	g_LightTimer.Update();
+	float fCurrTimeThroughLoop = g_LightTimer.GetAlpha();
+
+	glm::vec4 ret(0.0f, g_fLightHeight, 0.0f, 1.0f);
+
+	ret.x = cosf(fCurrTimeThroughLoop * (3.14159f * 2.0f)) * g_fLightRadius;
+	ret.z = sinf(fCurrTimeThroughLoop * (3.14159f * 2.0f)) * g_fLightRadius;
+
+	return ret + glm::vec4(0.0f, 20.0f, 80.0f, 1.0f);
+}
 
 void DrawTrunk(glutil::MatrixStack &modelMatrix, float fTrunkHeight)
 {
@@ -94,10 +106,9 @@ void DrawCar(glutil::MatrixStack &modelMatrix)
 	glUseProgram(0);
 }
 
-void SendReflectorPosition(glutil::MatrixStack &modelMatrix, GLuint reflector, float relativePositionX, float relativePositionY, float relativePositionZ)
+void SendReflectorPosition(GLuint reflector, float relativePositionX, float relativePositionY, float relativePositionZ)
 {
-	glutil::PushStack push(modelMatrix);
-	modelMatrix.SetIdentity();
+	glutil::MatrixStack modelMatrix;
 
 	glm::vec4 basePosition(relativePositionX, relativePositionY, relativePositionZ, 1.0f);
 	modelMatrix.Translate(car->x(), 0.0f, car->z());
@@ -119,40 +130,74 @@ void DrawShip(glutil::MatrixStack &modelMatrix)
 	modelMatrix.Rotate(glm::vec3(0, 1.0f, 0), -34);
 	modelMatrix.Rotate(glm::vec3(0.5, 0.0, 0.5), 10);
 
-	glUseProgram(ReflectorsProgram.theProgram);
+	glUseProgram(ReflectorsAndLightProgram.reflectorsProgramData.theProgram);
 
-	glUniform1f(ReflectorsProgram.shininess, 2.3f);
-	glUniform3f(ReflectorsProgram.ks, 0.5f, 0.5f, 0.5f);
-	glUniform3f(ReflectorsProgram.ka, 0.2f, 0.2f, 0.2f);
-	glUniform3f(ReflectorsProgram.kd, 0.3f, 0.3f, 0.3f);
+	glUniform1f(ReflectorsAndLightProgram.reflectorsProgramData.shininess, 2.3f);
+	glUniform3f(ReflectorsAndLightProgram.reflectorsProgramData.ks, 0.5f, 0.5f, 0.5f);
+	glUniform3f(ReflectorsAndLightProgram.reflectorsProgramData.ka, 0.3f, 0.3f, 0.3f);
+	glUniform3f(ReflectorsAndLightProgram.reflectorsProgramData.kd, 0.3f, 0.3f, 0.3f);
 
-	glUniform1f(ReflectorsProgram.spotLight.cutoffUnif, 73.0);
-	glUniform1f(ReflectorsProgram.spotLight.exponentUnif, 3.0);
+	glUniform1f(ReflectorsAndLightProgram.reflectorsProgramData.spotLight.cutoffUnif, 73.0);
+	glUniform1f(ReflectorsAndLightProgram.reflectorsProgramData.spotLight.exponentUnif, 3.0);
 
-	glUniform3fv(ReflectorsProgram.spotLight.directionUnif, 1, glm::value_ptr(car->reflectorDirection()));
-	glUniform3fv(ReflectorsProgram.spotLight.intensityUnif, 1, glm::value_ptr(glm::vec3(0.8, 0.8, 0.8)));
+	glUniform3fv(ReflectorsAndLightProgram.reflectorsProgramData.spotLight.directionUnif, 1, glm::value_ptr(car->reflectorDirection()));
+	glUniform3fv(ReflectorsAndLightProgram.reflectorsProgramData.spotLight.intensityUnif, 1, glm::value_ptr(glm::vec3(0.8, 0.8, 0.8)));
 
-	SendReflectorPosition(modelMatrix, ReflectorsProgram.spotLight.positionLeftReflectorUnif, -0.2f, 0.2f, -0.5f);
-	SendReflectorPosition(modelMatrix, ReflectorsProgram.spotLight.positionRightReflectorUnif, 0.2f, 0.2f, -0.5f);
+	SendReflectorPosition(ReflectorsAndLightProgram.reflectorsProgramData.spotLight.positionLeftReflectorUnif, -0.2f, 0.2f, 0.5f);
+	SendReflectorPosition(ReflectorsAndLightProgram.reflectorsProgramData.spotLight.positionRightReflectorUnif, 0.2f, 0.2f, 0.5f);
 
-	glUniformMatrix4fv(ReflectorsProgram.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
-	glUniformMatrix4fv(ReflectorsProgram.worldToCameraMatrixUnif, 1, GL_FALSE, glm::value_ptr(worldToCamera));
+	glUniformMatrix4fv(ReflectorsAndLightProgram.reflectorsProgramData.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
+	glUniformMatrix4fv(ReflectorsAndLightProgram.reflectorsProgramData.worldToCameraMatrixUnif, 1, GL_FALSE, glm::value_ptr(worldToCamera));
+
+	glm::vec3 worldLightPos(CalcLightPosition());
+	
+	glUniform3fv(ReflectorsAndLightProgram.worldSpaceLightPosUnif, 1, glm::value_ptr(worldLightPos));
+
 	g_pShip->Render();
 
 	glUseProgram(0);
 }
 
+
+
 void DrawRoad(glutil::MatrixStack &modelMatrix)
 {
 	glutil::PushStack push(modelMatrix);
+	
 	glDisable(GL_DEPTH_TEST);
+	glm::mat4 worldToCamera = modelMatrix.Top();
 
+	modelMatrix.SetIdentity();
+	
 	modelMatrix.Scale(glm::vec3(30.0f, 1.0f, 100.0f));
 	modelMatrix.Translate(0.0f, 0.0f, -0.5f);
 
-	glUseProgram(UniformColor.theProgram);
-	glUniformMatrix4fv(UniformColor.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
-	glUniform4f(UniformColor.baseColorUnif, 0.22f, 0.21f, 0.15f, 1.0f);
+	glUseProgram(UniformColorAndLightProgram.theProgram);
+	glUniformMatrix4fv(UniformColorAndLightProgram.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
+
+	glUniform3f(UniformColorAndLightProgram.ka, 0.3f, 0.3f, 0.3f);
+
+	glUniform1f(UniformColorAndLightProgram.spotLight.cutoffUnif, 73.0);
+	glUniform1f(UniformColorAndLightProgram.spotLight.exponentUnif, 3.0);
+
+	glUniform3fv(UniformColorAndLightProgram.spotLight.directionUnif, 1, glm::value_ptr(car->reflectorDirection()));
+	glUniform3fv(UniformColorAndLightProgram.spotLight.intensityUnif, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
+
+	SendReflectorPosition(UniformColorAndLightProgram.spotLight.positionLeftReflectorUnif, -0.2f, 0.2f, 0.5f);
+	SendReflectorPosition(UniformColorAndLightProgram.spotLight.positionRightReflectorUnif, 0.2f, 0.2f, 0.5f);
+
+	glUniformMatrix4fv(UniformColorAndLightProgram.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
+	glUniformMatrix4fv(UniformColorAndLightProgram.worldToCameraMatrixUnif, 1, GL_FALSE, glm::value_ptr(worldToCamera));
+
+	glUniformMatrix4fv(UniformColorAndLightProgram.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
+	glUniform4f(UniformColorAndLightProgram.baseColorUnif, 0.72f, 0.71f, 0.35f, 1.0f);
+
+	glUniform4fv(UniformColorAndLightProgram.lightIntensityUnif, 1, glm::value_ptr(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f)));
+
+	glm::vec3 worldLightPos(CalcLightPosition());
+	
+	glUniform3fv(UniformColorAndLightProgram.worldSpaceLightPosUnif, 1, glm::value_ptr(worldLightPos));
+
 	g_pPlaneMesh->Render();
 
 	glUseProgram(0);
@@ -162,12 +207,36 @@ void DrawRoad(glutil::MatrixStack &modelMatrix)
 void DrawUniformGround(glutil::MatrixStack &modelMatrix)
 {
 	glutil::PushStack push(modelMatrix);
+	
+	glm::mat4 worldToCamera = modelMatrix.Top();
 
+	modelMatrix.SetIdentity();
 	modelMatrix.Scale(glm::vec3(100.0f, 1.0f, 200.0f));
 
-	glUseProgram(UniformColor.theProgram);
-	glUniformMatrix4fv(UniformColor.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
-	glUniform4f(UniformColor.baseColorUnif, 0.22f, 0.12f, 0.07f, 1.0f);
+	glUseProgram(UniformColorAndLightProgram.theProgram);
+	glUniformMatrix4fv(UniformColorAndLightProgram.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
+
+	glUniform3f(UniformColorAndLightProgram.ka, 0.2f, 0.2f, 0.2f);
+
+	glUniform1f(UniformColorAndLightProgram.spotLight.cutoffUnif, 73.0);
+	glUniform1f(UniformColorAndLightProgram.spotLight.exponentUnif, 3.0);
+
+	glUniform3fv(UniformColorAndLightProgram.spotLight.directionUnif, 1, glm::value_ptr(car->reflectorDirection()));
+	glUniform3fv(UniformColorAndLightProgram.spotLight.intensityUnif, 1, glm::value_ptr(glm::vec3(1.0, 1.0, 1.0)));
+
+	SendReflectorPosition(UniformColorAndLightProgram.spotLight.positionLeftReflectorUnif, -0.2f, 0.2f, 0.5f);
+	SendReflectorPosition(UniformColorAndLightProgram.spotLight.positionRightReflectorUnif, 0.2f, 0.2f, 0.5f);
+
+	glUniformMatrix4fv(UniformColorAndLightProgram.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
+	glUniformMatrix4fv(UniformColorAndLightProgram.worldToCameraMatrixUnif, 1, GL_FALSE, glm::value_ptr(worldToCamera));
+	glUniform4f(UniformColorAndLightProgram.baseColorUnif, 0.62f, 0.62f, 0.27f, 1.0f);
+
+	glUniform4fv(UniformColorAndLightProgram.lightIntensityUnif, 1, glm::value_ptr(glm::vec4(0.3f, 0.3f, 0.3f, 1.0f)));
+
+	glm::vec3 worldLightPos(CalcLightPosition());
+	
+	glUniform3fv(UniformColorAndLightProgram.worldSpaceLightPosUnif, 1, glm::value_ptr(worldLightPos));
+	
 	g_pPlaneMesh->Render();
 
 	glUseProgram(0);
@@ -177,19 +246,6 @@ void DrawGround(glutil::MatrixStack &modelMatrix)
 {
 	DrawUniformGround(modelMatrix);
 	DrawRoad(modelMatrix);
-}
-
-glm::vec4 CalcLightPosition()
-{
-	g_LightTimer.Update();
-	float fCurrTimeThroughLoop = g_LightTimer.GetAlpha();
-
-	glm::vec4 ret(0.0f, g_fLightHeight, 0.0f, 1.0f);
-
-	ret.x = cosf(fCurrTimeThroughLoop * (3.14159f * 2.0f)) * g_fLightRadius;
-	ret.z = sinf(fCurrTimeThroughLoop * (3.14159f * 2.0f)) * g_fLightRadius;
-
-	return ret;
 }
 
 void DrawTetrahedron(glutil::MatrixStack &modelMatrix)
@@ -219,16 +275,15 @@ void DrawTetrahedron(glutil::MatrixStack &modelMatrix)
 	glUniform3fv(ReflectorsAndLightProgram.reflectorsProgramData.spotLight.directionUnif, 1, glm::value_ptr(car->reflectorDirection()));
 	glUniform3fv(ReflectorsAndLightProgram.reflectorsProgramData.spotLight.intensityUnif, 1, glm::value_ptr(glm::vec3(0.8f, 0.8f, 0.8f)));
 
-	SendReflectorPosition(modelMatrix, ReflectorsAndLightProgram.reflectorsProgramData.spotLight.positionLeftReflectorUnif, -0.2f, 0.2f, -0.5f);
-	SendReflectorPosition(modelMatrix, ReflectorsAndLightProgram.reflectorsProgramData.spotLight.positionRightReflectorUnif, 0.2f, 0.2f, -0.5f);
+	SendReflectorPosition(ReflectorsAndLightProgram.reflectorsProgramData.spotLight.positionLeftReflectorUnif, -0.2f, 0.2f, -0.5f);
+	SendReflectorPosition(ReflectorsAndLightProgram.reflectorsProgramData.spotLight.positionRightReflectorUnif, 0.2f, 0.2f, -0.5f);
 
 	glUniformMatrix4fv(ReflectorsAndLightProgram.reflectorsProgramData.modelToWorldMatrixUnif, 1, GL_FALSE, glm::value_ptr(modelMatrix.Top()));
 	glUniformMatrix4fv(ReflectorsAndLightProgram.reflectorsProgramData.worldToCameraMatrixUnif, 1, GL_FALSE, glm::value_ptr(worldToCamera));
 
 	glUniform4fv(ReflectorsAndLightProgram.lightIntensityUnif, 1, glm::value_ptr(glm::vec4(0.7f, 0.7f, 0.7f, 1.0f)));
 
-	glm::vec3 modelLightPos(CalcLightPosition());
-	glm::vec3 worldLightPos(modelLightPos + glm::vec3(25.0f, 40.0f, 100.0f));
+	glm::vec3 worldLightPos(CalcLightPosition());
 	
 	glUniform3fv(ReflectorsAndLightProgram.worldSpaceLightPosUnif, 1, glm::value_ptr(worldLightPos));
 	

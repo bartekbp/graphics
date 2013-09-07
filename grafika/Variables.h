@@ -39,6 +39,24 @@ struct ReflectorsProgramData
 	GLuint cameraToClipMatrixUnif;
 };
 
+struct ReflectorsAndUniformColorProgramData
+{
+	GLuint theProgram;
+
+	SpotLightInfo spotLight;
+
+	GLuint ka;					// Ambient reflectivity
+
+	GLuint modelToWorldMatrixUnif;
+	GLuint worldToCameraMatrixUnif;
+	GLuint cameraToClipMatrixUnif;
+
+	GLuint baseColorUnif;
+
+	GLuint worldSpaceLightPosUnif;
+	GLuint lightIntensityUnif;
+};
+
 struct ReflectorsAndLightProgramData
 {
 	struct ReflectorsProgramData reflectorsProgramData;
@@ -68,8 +86,9 @@ extern GLuint g_projectionUniformBuffer;
 
 extern ProgramData ColorProvided;
 extern ProgramData UniformColor;
-extern ReflectorsProgramData ReflectorsProgram;
 extern ReflectorsAndLightProgramData ReflectorsAndLightProgram;
+extern ReflectorsAndUniformColorProgramData UniformColorAndLightProgram;
+
 
 
 extern Framework::Mesh *g_pConeMesh;

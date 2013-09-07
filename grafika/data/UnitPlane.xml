@@ -7,6 +7,11 @@
         0.5 0 0.5
         -0.5 0 0.5
         -0.5 0 -0.5</attribute>
+   <attribute index="2" type="float" size="3">
+      0.0 1.0 0.0
+      0.0 1.0 0.0
+      0.0 1.0 0.0
+      0.0 1.0 0.0</attribute>
 	<indices cmd="triangles" type="ushort" > 
         0 1 2
         0 2 1

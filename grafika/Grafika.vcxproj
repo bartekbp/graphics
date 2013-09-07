@@ -124,14 +124,14 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="data\ColorUniformAndLight.frag" />
+    <None Include="data\ColorUniformAndLight.vert" />
     <None Include="data\Lights.frag" />
     <None Include="data\Lights.vert" />
     <None Include="data\PosOnlyWorldTransform.vert" />
     <None Include="data\PosColorWorldTransform.vert" />
     <None Include="data\ColorMultUniform.frag" />
     <None Include="data\ColorUniform.frag" />
-    <None Include="data\Reflectors.frag" />
-    <None Include="data\Reflectors.vert" />
     <None Include="data\ReflectorsAndLight.frag" />
     <None Include="data\ReflectorsAndLight.vert" />
   </ItemGroup>

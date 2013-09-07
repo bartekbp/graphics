@@ -2,8 +2,8 @@
 
 ProgramData ColorProvided;
 ProgramData UniformColor;
-ReflectorsProgramData ReflectorsProgram;
 ReflectorsAndLightProgramData ReflectorsAndLightProgram;
+ReflectorsAndUniformColorProgramData UniformColorAndLightProgram;
 
 Framework::Mesh *g_pConeMesh = NULL;
 Framework::Mesh *g_pCylinderMesh = NULL;

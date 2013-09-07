@@ -29,11 +29,11 @@ ProgramData LoadProgram(const std::string &strVertexShader, const std::string &s
 }
 
 
-ReflectorsProgramData LoadReflectorsProgram(std::string vertexShared, std::string fragmentShader)
+ReflectorsProgramData LoadReflectorsProgram(std::string vertexShader, std::string fragmentShader)
 {
 	std::vector<GLuint> shaderList;
 
-	shaderList.push_back(Framework::LoadShader(GL_VERTEX_SHADER, vertexShared));
+	shaderList.push_back(Framework::LoadShader(GL_VERTEX_SHADER, vertexShader));
 	shaderList.push_back(Framework::LoadShader(GL_FRAGMENT_SHADER, fragmentShader));
 
 	ReflectorsProgramData data;
@@ -71,11 +71,41 @@ ReflectorsAndLightProgramData LoadReflectorsAndLightsProgram(std::string vertexS
 	return data;
 }
 
+ReflectorsAndUniformColorProgramData LoadReflectorsAndUniformColorProgram(std::string vertexShader, std::string fragmentShader)
+{
+	std::vector<GLuint> shaderList;
+
+	shaderList.push_back(Framework::LoadShader(GL_VERTEX_SHADER, vertexShader));
+	shaderList.push_back(Framework::LoadShader(GL_FRAGMENT_SHADER, fragmentShader));
+
+	ReflectorsAndUniformColorProgramData data;
+	data.theProgram = Framework::CreateProgram(shaderList);
+	
+	data.spotLight.positionLeftReflectorUnif = glGetUniformLocation(data.theProgram, "Spot.positionLeftReflector");
+	data.spotLight.positionRightReflectorUnif = glGetUniformLocation(data.theProgram, "Spot.positionRightReflector");
+	data.spotLight.intensityUnif = glGetUniformLocation(data.theProgram, "Spot.intensity");
+	data.spotLight.directionUnif = glGetUniformLocation(data.theProgram, "Spot.direction");
+	data.spotLight.exponentUnif = glGetUniformLocation(data.theProgram, "Spot.exponent");
+	data.spotLight.cutoffUnif = glGetUniformLocation(data.theProgram, "Spot.cutoff");
+	
+	data.ka = glGetUniformLocation(data.theProgram, "Ka");
+	data.baseColorUnif = glGetUniformLocation(data.theProgram, "baseColor");
+
+	data.worldSpaceLightPosUnif = glGetUniformLocation(data.theProgram, "worldSpaceLightPos");
+	data.lightIntensityUnif = glGetUniformLocation(data.theProgram, "lightIntensity");
+
+	data.cameraToClipMatrixUnif = glGetUniformLocation(data.theProgram, "cameraToClipMatrix");
+	data.modelToWorldMatrixUnif = glGetUniformLocation(data.theProgram, "modelToWorldMatrix");
+	data.worldToCameraMatrixUnif = glGetUniformLocation(data.theProgram, "worldToCameraMatrix");
+
+	return data;
+}
+
 void InitializeProgram()
 {
 	UniformColor = LoadProgram("PosOnlyWorldTransform.vert", "ColorUniform.frag");
 	ColorProvided = LoadProgram("PosColorWorldTransform.vert", "ColorMultUniform.frag");
-	ReflectorsProgram = LoadReflectorsProgram("Reflectors.vert", "Reflectors.frag");
+	UniformColorAndLightProgram = LoadReflectorsAndUniformColorProgram("ColorUniformAndLight.vert", "ColorUniformAndLight.frag");
 	ReflectorsAndLightProgram = LoadReflectorsAndLightsProgram("ReflectorsAndLight.vert", "ReflectorsAndLight.frag");
 }
 
